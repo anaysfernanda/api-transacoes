@@ -10,7 +10,7 @@ export class User {
     private _name: string,
     private _age: number,
     private _email: string,
-    private _cpf: string
+    private _cpf: number
   ) {
     this._id = createUuid();
   }
@@ -55,7 +55,7 @@ export class User {
     return this._cpf;
   }
 
-  public set cpf(cpf: string) {
+  public set cpf(cpf: number) {
     this._cpf = cpf;
   }
 
@@ -65,7 +65,21 @@ export class User {
       nome: this._name,
       idade: this._age,
       email: this._email,
-      cpf: cpfValidator.format(this._cpf.toString().padStart(11, "0")),
+      cpf: this._cpf,
     };
+  }
+
+  public static create(
+    id: string,
+    name: string,
+    age: number,
+    cpf: number,
+    email: string,
+    transaction?: Transaction[]
+  ) {
+    const user = new User(name, age, email, cpf);
+    user._id = id;
+
+    return user;
   }
 }

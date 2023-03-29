@@ -42,23 +42,23 @@ export const userRoutes = () => {
     TransactionController.getTransaction
   );
 
-  app.get(
-    "/users/:userId/transactions/",
-    [TransactionValidatorMiddleware.userValid],
-    TransactionController.getTransactionList
-  );
+  // app.get(
+  //   "/users/:userId/transactions/",
+  //   [TransactionValidatorMiddleware.userValid],
+  //   TransactionController.getTransactionList
+  // );
 
-  app.put(
-    "/users/:userId/transactions/:transactionId",
-    [TransactionValidatorMiddleware.userValid],
-    TransactionController.edit
-  );
+  // app.put(
+  //   "/users/:userId/transactions/:transactionId",
+  //   [TransactionValidatorMiddleware.userValid],
+  //   TransactionController.edit
+  // );
 
-  app.delete(
-    "/users/:userId/transactions/:transactionId",
-    [TransactionValidatorMiddleware.userValid],
-    TransactionController.delete
-  );
+  // app.delete(
+  //   "/users/:userId/transactions/:transactionId",
+  //   [TransactionValidatorMiddleware.userValid],
+  //   TransactionController.delete
+  // );
 
   app.all("/*", (req, res) => {
     res.status(500).send({

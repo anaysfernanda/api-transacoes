@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { UserDatabase } from "../database/user.database";
+import { UserDatabase } from "../database/repositories/user.database";
 import { transactionTypes } from "../models/transactions.models";
 
 export class TransactionValidatorMiddleware {
