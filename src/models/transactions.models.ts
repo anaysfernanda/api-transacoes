@@ -2,7 +2,7 @@ import { v4 as createUuid } from "uuid";
 
 export const transactionTypes = ["Income", "Outcome"] as const;
 
-type TypeTransaction = typeof transactionTypes[number];
+export type TypeTransaction = typeof transactionTypes[number];
 
 export class Transaction {
   private _id: string;
@@ -51,5 +51,17 @@ export class Transaction {
       value: this._value,
       type: this._type,
     };
+  }
+
+  public static create(
+    id: string,
+    value: number,
+    type: TypeTransaction,
+    title: string
+  ) {
+    const transaction = new Transaction(title, value, type);
+    transaction._id = id;
+
+    return transaction;
   }
 }

@@ -1,14 +1,46 @@
 import { Request, Response } from "express";
+import { title } from "process";
+import { TransactionDatabase } from "../database/repositories/transaction.database";
 import { UserDatabase } from "../database/repositories/user.database";
 import { Transaction } from "../models/transactions.models";
+import { User } from "../models/user.models";
 
 export class TransactionController {
-  public static create(req: Request, res: Response) {
+  public static async create(req: Request, res: Response) {
     try {
       const { userId } = req.params;
       const { title, value, type } = req.body;
 
-      const user = new UserDatabase().get(userId);
+      if (!title) {
+        return res.status(400).send({
+          ok: false,
+          message: "Title was not provided",
+        });
+      }
+
+      if (!value) {
+        return res.status(400).send({
+          ok: false,
+          message: "Value was not provided",
+        });
+      }
+
+      if (!type) {
+        return res.status(400).send({
+          ok: false,
+          message: "Type was not provided",
+        });
+      }
+
+      if (!userId) {
+        return res.status(400).send({
+          ok: false,
+          message: "User was not provided!",
+        });
+      }
+
+      const userDatabase = new UserDatabase();
+      const user = await userDatabase.get(userId);
       if (!user) {
         return res.status(404).send({
           ok: false,
@@ -16,14 +48,23 @@ export class TransactionController {
         });
       }
 
-      const transaction = new Transaction(title, value, type);
-
+      const newTransaction = new Transaction(title, value, type);
+      const transaction = await new TransactionDatabase().create(
+        userId,
+        newTransaction
+      );
+      const result = {
+        title: transaction.title,
+        value: transaction.value,
+        type: transaction.type,
+      };
+      console.log(transaction);
       // user.transactions = [...user.transactions, transaction];
 
-      return res.status(200).send({
+      return res.status(201).send({
         ok: true,
         message: "Transaction added!",
-        data: transaction,
+        data: result,
       });
     } catch (error: any) {
       return res.status(500).send({
@@ -33,32 +74,22 @@ export class TransactionController {
     }
   }
 
-  public static getTransaction(req: Request, res: Response) {
+  public static async getTransaction(req: Request, res: Response) {
     try {
-      const { userId, transactionId } = req.params;
-      const user = new UserDatabase().get(userId);
+      const { transactionId } = req.params;
+      const transaction = await new TransactionDatabase().get(transactionId);
 
-      if (!user) {
+      if (transaction === 0) {
         return res.status(404).send({
           ok: false,
-          message: "User not found",
+          message: "Transaction not found",
         });
       }
-
-      // const transaction = user.transactions.find(
-      //   (item) => item.id === transactionId
-      // );
-
-      // if (!transaction) {
-      //   return res.status(404).send({
-      //     ok: false,
-      //     message: "Transaction not found",
-      //   });
-      // }
 
       return res.status(200).send({
         ok: true,
         message: "Displaying transaction",
+        data: transaction,
       });
     } catch (error: any) {
       console.error(error);
@@ -69,59 +100,33 @@ export class TransactionController {
     }
   }
 
-  // public static getTransactionList(req: Request, res: Response) {
-  //   try {
-  //     const { userId } = req.params;
-  //     const { title, type } = req.params;
-  //     const user = new UserDatabase().get(userId);
+  public static async getTransactionList(req: Request, res: Response) {
+    try {
+      const { userId } = req.params;
+      const database = new TransactionDatabase();
+      const list = await database.list(userId);
+      const result = list.map((transaction) => {
+        return {
+          id: transaction.id,
+          value: transaction.value,
+          title: transaction.title,
+          type: transaction.type,
+        };
+      });
+      console.log(result);
 
-  //     if (!user) {
-  //       return res.status(404).send({
-  //         ok: false,
-  //         message: "User not found!",
-  //       });
-  //     }
-
-  //     if (title) {
-  //       user.transactions.filter((item) => item.title === title);
-  //     }
-
-  //     if (type) {
-  //       if (type === "Income" || type === "Outcome") {
-  //         user.transactions.filter((item) => item.type === type);
-  //       }
-  //     }
-
-  //     let incomes = user.transactions
-  //       .filter((item) => item.type === "Income")
-  //       .reduce((current, total) => {
-  //         return current + total.value;
-  //       }, 0);
-
-  //     let outcomes = user.transactions
-  //       .filter((item) => item.type === "Outcome")
-  //       .reduce((current, total) => {
-  //         return current + total.value;
-  //       }, 0);
-
-  //     let total = incomes - outcomes;
-
-  //     return res.status(200).send({
-  //       ok: true,
-  //       transactions: user.transactions,
-  //       balance: {
-  //         income: incomes,
-  //         outcome: outcomes,
-  //         total: total,
-  //       },
-  //     });
-  //   } catch (error: any) {
-  //     return res.status(500).send({
-  //       ok: false,
-  //       message: error.toString(),
-  //     });
-  //   }
-  // }
+      return res.status(200).send({
+        ok: true,
+        message: "Transactions success listed",
+        data: result,
+      });
+    } catch (error: any) {
+      return res.status(500).send({
+        ok: false,
+        message: error.toString(),
+      });
+    }
+  }
 
   // public static edit(req: Request, res: Response) {
   //   try {

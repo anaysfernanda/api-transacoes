@@ -42,11 +42,10 @@ export const userRoutes = () => {
     TransactionController.getTransaction
   );
 
-  // app.get(
-  //   "/users/:userId/transactions/",
-  //   [TransactionValidatorMiddleware.userValid],
-  //   TransactionController.getTransactionList
-  // );
+  app.get(
+    "/users/:userId/transactions/",
+    TransactionController.getTransactionList
+  );
 
   // app.put(
   //   "/users/:userId/transactions/:transactionId",

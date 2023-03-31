@@ -1,16 +1,19 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { TypeTransaction } from "../../models/transactions.models";
 import { UserEntity } from "./user.entity";
 
 @Entity("transaction")
 export class TransactionEntity {
-  @PrimaryColumn()
+  @PrimaryColumn({
+    name: "id_transaction",
+  })
   id: string;
 
   @Column()
   title: string;
 
   @Column()
-  type: string;
+  type: TypeTransaction;
 
   @Column()
   value: number;
