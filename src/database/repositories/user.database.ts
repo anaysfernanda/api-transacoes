@@ -69,4 +69,15 @@ export class UserDatabase {
 
     return result.affected ?? 0;
   }
+
+  public async login(user: any): Promise<any> {
+    const result = await this.repository.findOne({
+      where: {
+        email: user.email,
+        cpf: user.cpf,
+      },
+    });
+
+    return result;
+  }
 }

@@ -10,7 +10,7 @@ export class Transaction {
   constructor(
     private _title: string,
     private _value: number,
-    private _type: TypeTransaction
+    private _type: string
   ) {
     this._id = createUuid();
   }
@@ -40,7 +40,7 @@ export class Transaction {
     return this._type;
   }
 
-  public set type(type: TypeTransaction) {
+  public set type(type: string) {
     this._type = type;
   }
 
@@ -53,12 +53,7 @@ export class Transaction {
     };
   }
 
-  public static create(
-    id: string,
-    value: number,
-    type: TypeTransaction,
-    title: string
-  ) {
+  public static create(id: string, value: number, type: string, title: string) {
     const transaction = new Transaction(title, value, type);
     transaction._id = id;
 

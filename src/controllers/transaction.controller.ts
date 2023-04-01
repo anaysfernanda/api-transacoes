@@ -58,8 +58,6 @@ export class TransactionController {
         value: transaction.value,
         type: transaction.type,
       };
-      console.log(transaction);
-      // user.transactions = [...user.transactions, transaction];
 
       return res.status(201).send({
         ok: true,
@@ -128,89 +126,76 @@ export class TransactionController {
     }
   }
 
-  // public static edit(req: Request, res: Response) {
-  //   try {
-  //     const { title, value, type } = req.body;
-  //     const { userId, transactionId } = req.params;
+  public static async edit(req: Request, res: Response) {
+    try {
+      const { title, value, type } = req.body;
+      const { userId, transactionId } = req.params;
 
-  //     const user = new UserDatabase().get(userId);
-  //     const transactionSelect = user?.transactions.find(
-  //       (item) => item.id === transactionId
-  //     );
+      const user = new UserDatabase().get(userId);
 
-  //     if (!user) {
-  //       return res.status(404).send({
-  //         ok: false,
-  //         message: "User not found!",
-  //       });
-  //     }
+      if (!user) {
+        return res.status(404).send({
+          ok: false,
+          message: "User not found!",
+        });
+      }
 
-  //     if (!transactionSelect) {
-  //       return res.status(404).send({
-  //         ok: false,
-  //         message: "Transaction not found!",
-  //       });
-  //     }
+      const database = new TransactionDatabase();
+      const result = await database.update(transactionId, value, title, type);
 
-  //     if (title) {
-  //       transactionSelect.title = title;
-  //     }
+      if (result === 0) {
+        return res.status(404).send({
+          ok: false,
+          message: "Transaction not updated",
+        });
+      }
 
-  //     if (value) {
-  //       transactionSelect.value = value;
-  //     }
+      const transaction = await database.get(transactionId);
 
-  //     if (type) {
-  //       transactionSelect.type = type;
-  //     }
+      res.status(200).send({
+        ok: true,
+        message: "Transaction updated",
+        data: transaction,
+      });
+    } catch (error: any) {
+      return res.status(500).send({
+        ok: false,
+        message: error.toString(),
+      });
+    }
+  }
 
-  //     res.status(200).send({
-  //       ok: true,
-  //       message: "Transaction updated",
-  //       data: transactionSelect,
-  //     });
-  //   } catch (error: any) {
-  //     return res.status(500).send({
-  //       ok: false,
-  //       message: error.toString(),
-  //     });
-  //   }
-  // }
+  public static async delete(req: Request, res: Response) {
+    try {
+      const { userId, transactionId } = req.params;
+      const user = new UserDatabase().get(userId);
 
-  // public static delete(req: Request, res: Response) {
-  //   try {
-  //     const { userId, transactionId } = req.params;
-  //     const user = new UserDatabase().get(userId);
+      if (!user) {
+        return res.status(404).send({
+          ok: false,
+          message: "User not found!",
+        });
+      }
 
-  //     if (!user) {
-  //       return res.status(404).send({
-  //         ok: false,
-  //         message: "User not found!",
-  //       });
-  //     }
+      const database = new TransactionDatabase();
+      const result = await database.delete(transactionId);
 
-  //     let transactionSelect = user?.transactions.findIndex(
-  //       (item) => item.id === transactionId
-  //     );
+      if (result === 0) {
+        return res.status(404).send({
+          ok: false,
+          message: "Transaction not found",
+        });
+      }
 
-  //     if (transactionSelect < 0) {
-  //       return res.status(404).send({
-  //         ok: false,
-  //         message: "Transaction not found",
-  //       });
-  //     }
-
-  //     user.transactions.splice(transactionSelect, 1);
-
-  //     return res.status(200).send({
-  //       ok: true,
-  //       message: "Transaction deleted",
-  //     });
-  //   } catch (error: any) {
-  //     return res.status(500).send({
-  //       ok: false,
-  //       message: error.toString(),
-  //     });
-  //   }
-  // }
+      return res.status(200).send({
+        ok: true,
+        message: "Transaction deleted",
+      });
+    } catch (error: any) {
+      return res.status(500).send({
+        ok: false,
+        message: error.toString(),
+      });
+    }
+  }
 }

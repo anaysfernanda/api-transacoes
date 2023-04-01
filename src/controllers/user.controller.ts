@@ -124,4 +124,46 @@ export class UserController {
       });
     }
   }
+
+  public static async login(req: Request, res: Response) {
+    try {
+      const { email, cpf } = req.body;
+      const database = new UserDatabase();
+
+      if (!email) {
+        return res.status(404).send({
+          ok: false,
+          message: "Email not found",
+        });
+      }
+
+      if (!cpf) {
+        return res.status(404).send({
+          ok: false,
+          message: "CPF not found",
+        });
+      }
+
+      const user = {
+        email,
+        cpf,
+      };
+      const result = await database.login(user);
+
+      const userId = {
+        id: result.id,
+      };
+
+      return res.status(200).send({
+        ok: true,
+        message: "Logged successfully",
+        data: userId,
+      });
+    } catch (error: any) {
+      return res.status(500).send({
+        ok: false,
+        message: error.toString(),
+      });
+    }
+  }
 }

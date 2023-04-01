@@ -13,7 +13,7 @@ export class TransactionEntity {
   title: string;
 
   @Column()
-  type: TypeTransaction;
+  type: string;
 
   @Column()
   value: number;

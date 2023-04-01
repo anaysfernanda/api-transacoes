@@ -1,4 +1,4 @@
-import { Transaction } from "../../models/transactions.models";
+import { Transaction, TypeTransaction } from "../../models/transactions.models";
 import { DatabaseConnection } from "../config/database.connection";
 import { TransactionEntity } from "../entities/transaction.entity";
 
@@ -50,5 +50,33 @@ export class TransactionDatabase {
 
     const result = await this.repository.save(transactionEntity);
     return TransactionDatabase.mapEntityToModel(result);
+  }
+
+  public async update(
+    id: string,
+    value: number,
+    title: string,
+    type: string
+  ): Promise<any> {
+    const result = await this.repository.update(
+      {
+        id,
+      },
+      {
+        value,
+        title,
+        type,
+      }
+    );
+
+    return result;
+  }
+
+  public async delete(id: string): Promise<number> {
+    const result = await this.repository.delete({
+      id,
+    });
+
+    return result.affected ?? 0;
   }
 }

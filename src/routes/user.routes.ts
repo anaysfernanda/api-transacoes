@@ -21,6 +21,8 @@ export const userRoutes = () => {
 
   app.get("/users/:userId", UserController.getUser);
 
+  app.post("/users/login", UserController.login);
+
   app.get("/users", UserController.getUsersList);
 
   app.put("/users/:userId", UserController.editUser);
@@ -47,17 +49,15 @@ export const userRoutes = () => {
     TransactionController.getTransactionList
   );
 
-  // app.put(
-  //   "/users/:userId/transactions/:transactionId",
-  //   [TransactionValidatorMiddleware.userValid],
-  //   TransactionController.edit
-  // );
+  app.put(
+    "/users/:userId/transactions/:transactionId",
+    TransactionController.edit
+  );
 
-  // app.delete(
-  //   "/users/:userId/transactions/:transactionId",
-  //   [TransactionValidatorMiddleware.userValid],
-  //   TransactionController.delete
-  // );
+  app.delete(
+    "/users/:userId/transactions/:transactionId",
+    TransactionController.delete
+  );
 
   app.all("/*", (req, res) => {
     res.status(500).send({
